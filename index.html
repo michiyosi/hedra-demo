@@ -177,6 +177,9 @@
       if(!res.ok) throw new Error(`getToken HTTP ${res.status}: ${raw}`);
       let data; try{ data = JSON.parse(raw); }catch{ throw new Error(`getToken JSON解析失敗: ${raw}`); }
       if(!data?.token || !data?.url) throw new Error(`getToken 応答が不正: ${raw}`);
+// ① 接続情報（本来は /api/getToken から取得する）
+const url = "wss://guangdaoxianguanguanganneiaiejientoearishizuo1haoji-yo7qg6ht.livekit.cloud";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....U4EjIDZDxccMOFL-a5SN6CAK25r9XCDGSNXodWJ64eE";
 
       // ② LiveKit接続
 const room = new LivekitClient.Room();
