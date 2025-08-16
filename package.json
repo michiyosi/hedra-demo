@@ -1,6 +1,22 @@
 {
+  "name": "hedra-demo",
+  "version": "1.0.0",
   "type": "module",
+  "scripts": {},
   "dependencies": {
-    "livekit-server-sdk": "^1.1.0"
-  }
+    "livekit-server-sdk": "^2.13.2"
+  },
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michiyosi/hedra-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michiyosi/hedra-demo/issues"
+  },
+  "homepage": "https://github.com/michiyosi/hedra-demo#readme"
 }
