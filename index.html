@@ -3,128 +3,172 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hedra Live Avatars 体験リンク（デモ）</title>
+  <title>Hedra Live Avatars 体験リンク（デモ仕上げ版）</title>
+  <meta name="color-scheme" content="dark light">
   <style>
     :root{
-      --bg:#0b1020; --card:#111833; --ink:#eaf0ff; --muted:#a7b0c8; --accent:#6ca0ff; --ok:#25d366; --warn:#ffd166;
+      --bg:#0a0f23; --bg2:#0c1433; --card:#0f1a3b; --ink:#e9efff; --muted:#a7b0c8;
+      --line:rgba(255,255,255,.08); --accent:#72a7ff; --accent2:#7affd5;
+      --ok:#25d366; --warn:#ffd166; --err:#ff6b6b;
     }
     *{box-sizing:border-box}
-    body{margin:0; background:radial-gradient(1200px 600px at 20% -10%,#1a2346 0%, #0b1020 55%, #0b1020 100%); color:var(--ink); font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;}
-    .wrap{max-width:960px; margin:40px auto; padding:0 20px;}
-    header{display:flex; gap:12px; align-items:center; margin-bottom:18px}
-    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6ca0ff, #7affd5)}
-    h1{font-size:28px; margin:0}
-    .card{background:rgba(17,24,51,.78); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:20px}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:20px}
-    @media (max-width:820px){ .row{grid-template-columns:1fr} }
-    label{display:block; color:var(--muted); font-size:14px; margin-bottom:6px}
-    input{width:100%; padding:12px 14px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:#0d142a; color:var(--ink)}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI","Noto Sans JP",Meiryo,sans-serif;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, #1b2750 0%, transparent 60%),
+        radial-gradient(1000px 600px at 100% 0%, #142351 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    }
+    .wrap{max-width:1080px; margin:36px auto 48px; padding:0 20px}
+    header{display:flex; gap:12px; align-items:center; margin:0 0 16px}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:0 8px 24px rgba(122,255,213,.25)}
+    h1{font-size:28px;margin:0}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:13px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:rgba(15,26,59,.75); border:1px solid var(--line); backdrop-filter:blur(6px); border-radius:18px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    label{display:block;color:var(--muted);font-size:13px;margin:2px 0 6px}
+    input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1533;color:var(--ink)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    /* 映像パネル */
     .video{
-      position:relative; border-radius:16px; overflow:hidden; height:360px;
-      background:linear-gradient(135deg, #0d142a, #101a35);
-      border:1px solid rgba(255,255,255,.08);
+      position:relative;height:380px;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+      background:linear-gradient(180deg,#0b122b,#0d1736);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
-    /* “映像っぽい”アニメ背景 */
-    .scan{position:absolute; inset:0; background:repeating-linear-gradient( to bottom, rgba(255,255,255,.06) 0 2px, transparent 2px 6px ); animation:scan 6s linear infinite;}
+    /* 走査線 */
+    .scan{position:absolute;inset:0;background:
+      repeating-linear-gradient(to bottom, rgba(255,255,255,.04) 0 2px, transparent 2px 6px);
+      animation:scan 7s linear infinite;}
     @keyframes scan{from{transform:translateY(-60px)} to{transform:translateY(60px)}}
-    .avatar-badge{
-      position:absolute; top:12px; left:12px; display:flex; gap:10px; align-items:center; background:rgba(8,12,28,.7);
-      backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,.1); padding:8px 12px; border-radius:999px; font-size:13px; color:#d9e4ff;
-    }
-    .pulse{width:10px;height:10px;border-radius:999px;background:var(--warn); animation:pulse 1.2s ease-in-out infinite}
-    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,209,102,.7)}70%{box-shadow:0 0 0 10px rgba(255,209,102,0)}100%{box-shadow:0 0 0 0 rgba(255,209,102,0)}}
-    .overlay-text{position:absolute; inset:0; display:grid; place-items:center; color:#cbd6ff; text-align:center}
-    .overlay-text small{display:block; color:var(--muted)}
-    .controls{display:flex; gap:12px; flex-wrap:wrap; margin-top:14px}
-    button{appearance:none; cursor:pointer; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:#0d142a; color:var(--ink)}
-    button.primary{background:linear-gradient(135deg,#6ca0ff,#7affd5); color:#0b1020; border:none; font-weight:600}
-    button.ghost{background:transparent}
-    .status{margin-top:12px; color:var(--muted); font-size:14px}
-    .ok{color:var(--ok)} .err{color:#ff6b6b}
-    footer{opacity:.7; font-size:13px; margin-top:24px}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    /* シャイン */
+    .shine{position:absolute;inset:-40% -10% auto -10%;height:40%;background:
+      linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 35%, transparent 70%);transform:rotate(-5deg);filter:blur(10px);animation:shine 5s ease-in-out infinite}
+    @keyframes shine{0%{transform:translateX(-40%) rotate(-5deg)} 100%{transform:translateX(40%) rotate(-5deg)}}
+    /* 右上: ステータス */
+    .badge{position:absolute;top:12px;left:12px;display:flex;gap:10px;align-items:center;background:rgba(8,12,28,.7);
+      border:1px solid var(--line);backdrop-filter:blur(6px);padding:8px 12px;border-radius:999px;font-size:13px}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 0 rgba(255,209,102,.6);animation:pulse 1.4s ease-in-out infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,209,102,.6)}70%{box-shadow:0 0 0 12px rgba(255,209,102,0)}100%{box-shadow:0 0 0 0 rgba(255,209,102,0)}}
+    /* 中央テキスト */
+    .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#cfe1ff}
+    .center small{display:block;color:var(--muted)}
+    /* マイクレベル風 */
+    .meters{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}
+    .bar{width:4px;height:18px;border-radius:999px;background:rgba(255,255,255,.18);animation:level 1s ease-in-out infinite alternate}
+    .bar:nth-child(2){animation-delay:.15s}
+    .bar:nth-child(3){animation-delay:.3s}
+    .bar:nth-child(4){animation-delay:.45s}
+    .bar:nth-child(5){animation-delay:.6s}
+    @keyframes level{from{height:6px} to{height:26px}}
+    /* ボタン */
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    button{appearance:none;cursor:pointer;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:#0d1533;color:var(--ink);font-weight:600}
+    .primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#081024;border:none;box-shadow:0 10px 20px rgba(114,167,255,.25)}
+    .ghost{background:transparent}
+    .danger{border-color:rgba(255,107,107,.4);color:#ffc7c7}
+    .status{margin-top:10px;color:var(--muted);font-size:13px}
+    .status.ok{color:var(--ok)} .status.err{color:var(--err)}
+    footer{opacity:.75;font-size:13px;margin-top:20px;line-height:1.6}
+    .hint{color:var(--muted)}
+    .kicker{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="logo"></div>
-      <h1>Hedra Live Avatars 体験リンク <span class="pill">デモUI</span></h1>
+      <div class="logo" aria-hidden="true"></div>
+      <h1>Hedra Live Avatars 体験リンク <span class="pill">デモ仕上げ版</span></h1>
     </header>
 
-    <div class="row">
-      <!-- 左：映像エリア -->
-      <div class="card">
-        <div class="video" id="videoBox">
-          <div class="scan"></div>
-          <div class="avatar-badge"><div class="pulse" id="dot"></div><span id="badge">待機中</span></div>
-          <div class="overlay-text" id="overlay">
+    <div class="grid">
+      <!-- 左パネル：映像＆操作 -->
+      <section class="card" aria-label="映像パネル">
+        <div class="video" id="videoBox" role="img" aria-label="アバター映像（デモ）">
+          <div class="shine" aria-hidden="true"></div>
+          <div class="scan" aria-hidden="true"></div>
+          <div class="badge"><span class="dot" id="dot"></span><span id="badge">待機中</span></div>
+          <div class="center" id="center">
             <div>
-              <div style="font-size:18px; font-weight:600;">ここに「アバターの映像」が表示されます</div>
-              <small>（デモ表示／LiveKit未接続）</small>
+              <div style="font-size:18px;font-weight:700">ここにアバター映像が表示されます</div>
+              <small>現在はデモ表示です。のちほど LiveKit に接続します。</small>
             </div>
           </div>
+          <div class="meters" aria-hidden="true">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
         </div>
+
         <div class="controls">
-          <button class="primary" id="btnConnect">接続する（デモ）</button>
-          <button class="ghost" id="btnMic">マイク許可（デモ）</button>
-          <button class="ghost" id="btnReset">リセット</button>
+          <button class="primary" id="btnConnect">🔌 接続する（デモ）</button>
+          <button class="ghost" id="btnMic">🎤 マイク許可（デモ）</button>
+          <button class="ghost" id="btnReset">🔄 リセット</button>
+          <button class="danger" id="btnEnd">⏹ 切断（デモ）</button>
         </div>
-        <div class="status" id="status">状態：未接続</div>
-      </div>
+        <div id="status" class="status">状態：未接続</div>
+        <div class="kicker">ヒント：後で <code>/api/getToken</code> を呼び出し、<code>livekit-client</code> で本接続に切り替えます。</div>
+      </section>
 
-      <!-- 右：設定エリア -->
-      <div class="card">
+      <!-- 右パネル：設定 -->
+      <aside class="card" aria-label="設定">
         <div style="margin-bottom:14px">
-          <label>表示名</label>
-          <input id="name" placeholder="例：Guest A" />
+          <label for="name">表示名</label>
+          <input id="name" placeholder="例：Guest A" autocomplete="name">
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+        <div class="row" style="margin-bottom:12px">
           <div>
             <label>音声</label>
-            <div class="pill">日本語 / 自動</div>
+            <span class="pill">日本語 / 自動</span>
           </div>
           <div>
             <label>表情</label>
-            <div class="pill">標準（デモ）</div>
+            <span class="pill">標準（デモ）</span>
           </div>
         </div>
 
         <footer>
-          <p>これは <strong>ダミーUI</strong> です。LiveKit 連携前の見た目確認用。<br/>のちほど <code>/api/getToken</code> に接続して本番化します。</p>
+          <p class="hint">このページは <strong>ダミーUI</strong> です。見た目と操作感を確認するためのもの。後で LiveKit と Hedra を結線して実動化します。</p>
         </footer>
-      </div>
+      </aside>
     </div>
   </div>
 
-  <!-- デモ用スクリプト：見た目だけ“動いている風” -->
   <script>
     const $ = (id)=>document.getElementById(id);
-    const status = (msg, cls)=>{$("status").textContent="状態："+msg; $("status").className="status "+(cls||"")}
+    const setStatus = (msg, cls="")=>{
+      const el = $("status"); el.textContent = "状態：" + msg; el.className = "status " + cls;
+    };
+    const setBadge = (text, color)=>{ $("badge").textContent = text; $("dot").style.background = color };
 
     $("btnConnect").onclick = async ()=>{
-      const name = $("name").value || "Guest";
-      status("接続準備中…"); $("badge").textContent="接続準備"; $("dot").style.background="#ffd166";
+      setStatus("接続準備中…");
+      setBadge("接続準備", "#ffd166");
       await wait(600);
-      status(`接続中：${name} を登録…`); await wait(800);
-      status("ルーム参加（デモ）"); await wait(600);
-      // デモ：オーバーレイ文言を変更
-      $("overlay").innerHTML = `<div><div style="font-size:18px;font-weight:600;">接続しました（デモ）</div><small>相手の映像が届くとここに表示されます</small></div>`;
-      $("badge").textContent="オンライン（デモ）"; $("dot").style.background="#25d366";
+
+      const name = $("name").value || "Guest";
+      setStatus(`接続中：${name} を登録…`);
+      await wait(700);
+
+      $("center").innerHTML = `<div><div style="font-size:18px;font-weight:700">接続しました（デモ）</div><small>相手の映像が届くとここに表示されます</small></div>`;
+      setStatus("オンライン（デモ）", "ok");
+      setBadge("オンライン（デモ）", "#25d366");
     };
 
     $("btnMic").onclick = async ()=>{
-      status("マイク権限を確認（デモ）");
-      // 実機では navigator.mediaDevices.getUserMedia({audio:true}) を呼びます
-      await wait(500);
-      status("マイクOK（デモ）","ok");
+      setStatus("マイク権限を確認（デモ）");
+      await wait(400);
+      setStatus("マイク OK（デモ）", "ok");
     };
 
     $("btnReset").onclick = ()=>{
-      $("overlay").innerHTML = `<div><div style="font-size:18px; font-weight:600;">ここに「アバターの映像」が表示されます</div><small>（デモ表示／LiveKit未接続）</small></div>`;
-      $("badge").textContent="待機中"; $("dot").style.background="#ffd166";
-      status("未接続");
+      $("center").innerHTML = `<div><div style="font-size:18px;font-weight:700">ここにアバター映像が表示されます</div><small>現在はデモ表示です。のちほど LiveKit に接続します。</small></div>`;
+      setStatus("未接続"); setBadge("待機中", "#ffd166");
+    };
+
+    $("btnEnd").onclick = ()=>{
+      setStatus("切断しました（デモ）"); setBadge("切断", "#ff6b6b");
     };
 
     function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
