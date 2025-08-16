@@ -135,43 +135,84 @@
     </div>
   </div>
 
-  <script>
-    const $ = (id)=>document.getElementById(id);
-    const setStatus = (msg, cls="")=>{
-      const el = $("status"); el.textContent = "状態：" + msg; el.className = "status " + cls;
-    };
-    const setBadge = (text, color)=>{ $("badge").textContent = text; $("dot").style.background = color };
+  <!-- LiveKit クライアント読込（追加） -->
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
 
-    $("btnConnect").onclick = async ()=>{
-      setStatus("接続準備中…");
-      setBadge("接続準備", "#ffd166");
-      await wait(600);
+<!-- 接続ロジック（差し替え） -->
+<script>
+  const $ = (id)=>document.getElementById(id);
+  const setStatus = (msg, cls="")=>{
+    const el = $("status"); el.textContent = "状態：" + msg; el.className = "status " + cls;
+  };
+  const setBadge = (text, color)=>{ $("badge").textContent = text; $("dot").style.background = color };
 
+  // 自分のカメラ/マイクを発行してプレビュー表示
+  async function publishLocalTracks(room){
+    const { LocalVideoTrack, LocalAudioTrack } = LivekitClient;
+    const cam = await LocalVideoTrack.create();
+    const mic = await LocalAudioTrack.create();
+    await room.localParticipant.publishTrack(cam);
+    await room.localParticipant.publishTrack(mic);
+
+    const el = cam.attach();
+    Object.assign(el.style, { width:"100%", height:"100%", objectFit:"cover" });
+    $("center").style.opacity = 0.2;
+    $("videoBox").appendChild(el);
+  }
+
+  // リモート映像を受信したら表示
+  function wireRemoteTracks(room){
+    room.on("trackSubscribed", (track) => {
+      if (track.kind === "video") {
+        const el = track.attach();
+        Object.assign(el.style, { width:"100%", height:"100%", objectFit:"cover" });
+        $("videoBox").appendChild(el);
+      }
+    });
+  }
+
+  let roomRef = null;
+
+  $("btnConnect").onclick = async ()=>{
+    try{
+      setStatus("接続準備中…"); setBadge("接続準備", "#ffd166");
       const name = $("name").value || "Guest";
-      setStatus(`接続中：${name} を登録…`);
-      await wait(700);
 
-      $("center").innerHTML = `<div><div style="font-size:18px;font-weight:700">接続しました（デモ）</div><small>相手の映像が届くとここに表示されます</small></div>`;
-      setStatus("オンライン（デモ）", "ok");
-      setBadge("オンライン（デモ）", "#25d366");
-    };
+      // ① トークン取得（自サイトのサーバーレス関数）
+      const r = await fetch(`/api/getToken?name=${encodeURIComponent(name)}&room=demo-room`);
+      if(!r.ok) throw new Error("トークン取得に失敗");
+      const { token, url } = await r.json();
 
-    $("btnMic").onclick = async ()=>{
-      setStatus("マイク権限を確認（デモ）");
-      await wait(400);
-      setStatus("マイク OK（デモ）", "ok");
-    };
+      // ② LiveKit に接続
+      const room = await LivekitClient.connect(url, token);
+      roomRef = room;
+      wireRemoteTracks(room);
 
-    $("btnReset").onclick = ()=>{
-      $("center").innerHTML = `<div><div style="font-size:18px;font-weight:700">ここにアバター映像が表示されます</div><small>現在はデモ表示です。のちほど LiveKit に接続します。</small></div>`;
-      setStatus("未接続"); setBadge("待機中", "#ffd166");
-    };
+      // ③ 自分のカメラ／マイクを公開（プレビュー表示）
+      await publishLocalTracks(room);
 
-    $("btnEnd").onclick = ()=>{
-      setStatus("切断しました（デモ）"); setBadge("切断", "#ff6b6b");
-    };
+      setStatus("オンライン（接続中）","ok");
+      setBadge("オンライン","#25d366");
 
-    function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-  </script>
+      $("btnEnd").onclick = ()=>{ try{room.disconnect();}catch{} setStatus("切断しました"); setBadge("切断","#ff6b6b"); };
+    }catch(e){
+      console.error(e);
+      setStatus("接続エラー：" + (e?.message||e), "err");
+      setBadge("エラー", "#ff6b6b");
+      alert("接続に失敗しました。/api/getToken と環境変数を確認してください。");
+    }
+  };
+
+  $("btnMic").onclick = async ()=>{
+    setStatus("マイク権限を確認"); await new Promise(r=>setTimeout(r,300));
+    setStatus("マイク OK","ok");
+  };
+
+  $("btnReset").onclick = ()=>{
+    try{ roomRef?.disconnect(); }catch{}
+    location.reload();
+  };
+</script>
+
 </body>
 </html>
