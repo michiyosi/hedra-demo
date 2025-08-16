@@ -79,7 +79,7 @@
   <div class="wrap">
     <header>
       <div class="logo" aria-hidden="true"></div>
-      <h1>Hedra Live Avatars 体験リンク <span class="pill">デモ仕上げ版</span></h1>
+      <h1>広島観光案内AIエージェント 体験リンク <span class="pill">デモ仕上げ版</span></h1>
     </header>
 
     <div class="grid">
@@ -179,9 +179,11 @@
       if(!data?.token || !data?.url) throw new Error(`getToken 応答が不正: ${raw}`);
 
       // ② LiveKit接続
-      setStatus("LiveKitへ接続中…");
-      const room = await LivekitClient.connect(data.url, data.token);
-      roomRef = room; wireRemoteTracks(room);
+const room = new LivekitClient.Room();
+await room.connect(url, token);
+roomRef = room;
+wireRemoteTracks(room);
+
 
       // ③ カメラ/マイク
       setStatus("カメラ/マイク取得中…（許可してください）");
