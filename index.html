@@ -31,30 +31,24 @@
     label{display:block;color:var(--muted);font-size:13px;margin:2px 0 6px}
     input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1533;color:var(--ink)}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    /* 映像パネル */
     .video{
       position:relative;height:380px;border:1px solid var(--line);border-radius:16px;overflow:hidden;
       background:linear-gradient(180deg,#0b122b,#0d1736);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
-    /* 走査線 */
     .scan{position:absolute;inset:0;background:
       repeating-linear-gradient(to bottom, rgba(255,255,255,.04) 0 2px, transparent 2px 6px);
       animation:scan 7s linear infinite;}
     @keyframes scan{from{transform:translateY(-60px)} to{transform:translateY(60px)}}
-    /* シャイン */
     .shine{position:absolute;inset:-40% -10% auto -10%;height:40%;background:
       linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 35%, transparent 70%);transform:rotate(-5deg);filter:blur(10px);animation:shine 5s ease-in-out infinite}
     @keyframes shine{0%{transform:translateX(-40%) rotate(-5deg)} 100%{transform:translateX(40%) rotate(-5deg)}}
-    /* 右上: ステータス */
     .badge{position:absolute;top:12px;left:12px;display:flex;gap:10px;align-items:center;background:rgba(8,12,28,.7);
       border:1px solid var(--line);backdrop-filter:blur(6px);padding:8px 12px;border-radius:999px;font-size:13px}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 0 rgba(255,209,102,.6);animation:pulse 1.4s ease-in-out infinite}
     @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,209,102,.6)}70%{box-shadow:0 0 0 12px rgba(255,209,102,0)}100%{box-shadow:0 0 0 0 rgba(255,209,102,0)}}
-    /* 中央テキスト */
     .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#cfe1ff}
     .center small{display:block;color:var(--muted)}
-    /* マイクレベル風 */
     .meters{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}
     .bar{width:4px;height:18px;border-radius:999px;background:rgba(255,255,255,.18);animation:level 1s ease-in-out infinite alternate}
     .bar:nth-child(2){animation-delay:.15s}
@@ -62,7 +56,6 @@
     .bar:nth-child(4){animation-delay:.45s}
     .bar:nth-child(5){animation-delay:.6s}
     @keyframes level{from{height:6px} to{height:26px}}
-    /* ボタン */
     .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
     button{appearance:none;cursor:pointer;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:#0d1533;color:var(--ink);font-weight:600}
     .primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#081024;border:none;box-shadow:0 10px 20px rgba(114,167,255,.25)}
@@ -83,7 +76,6 @@
     </header>
 
     <div class="grid">
-      <!-- 左パネル：映像＆操作 -->
       <section class="card" aria-label="映像パネル">
         <div class="video" id="videoBox" role="img" aria-label="アバター映像（デモ）">
           <div class="shine" aria-hidden="true"></div>
@@ -101,109 +93,98 @@
         </div>
 
         <div class="controls">
-          <button class="primary" id="btnConnect">🔌 接続する（デモ）</button>
+          <button class="primary" id="btnConnect">🔌 接続する</button>
           <button class="ghost" id="btnMic">🎤 マイク許可（デモ）</button>
           <button class="ghost" id="btnReset">🔄 リセット</button>
-          <button class="danger" id="btnEnd">⏹ 切断（デモ）</button>
+          <button class="danger" id="btnEnd">⏹ 切断</button>
         </div>
         <div id="status" class="status">状態：未接続</div>
-        <div class="kicker">ヒント：後で <code>/api/getToken</code> を呼び出し、<code>livekit-client</code> で本接続に切り替えます。</div>
+        <div class="kicker">ヒント：<code>/api/getToken</code> を呼び出し、<code>livekit-client</code> で接続します。</div>
       </section>
 
-      <!-- 右パネル：設定 -->
       <aside class="card" aria-label="設定">
         <div style="margin-bottom:14px">
           <label for="name">表示名</label>
           <input id="name" placeholder="例：Guest A" autocomplete="name">
         </div>
-
         <div class="row" style="margin-bottom:12px">
-          <div>
-            <label>音声</label>
-            <span class="pill">日本語 / 自動</span>
-          </div>
-          <div>
-            <label>表情</label>
-            <span class="pill">標準（デモ）</span>
-          </div>
+          <div><label>音声</label><span class="pill">日本語 / 自動</span></div>
+          <div><label>表情</label><span class="pill">標準（デモ）</span></div>
         </div>
-
         <footer>
-          <p class="hint">このページは <strong>ダミーUI</strong> です。見た目と操作感を確認するためのもの。後で LiveKit と Hedra を結線して実動化します。</p>
+          <p class="hint">このページは <strong>ダミーUI</strong> です。見た目を確認しながら段階的に実装します。</p>
         </footer>
       </aside>
     </div>
   </div>
 
-  <!-- LiveKit クライアント読込（追加） -->
-<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+  <!-- LiveKit クライアント（UMD） -->
+  <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+  <script>
+    const $ = (id)=>document.getElementById(id);
+    const setStatus = (m,c="")=>{ const el=$("status"); el.textContent="状態："+m; el.className="status "+c; };
+    const setBadge = (t,color)=>{ $("badge").textContent=t; $("dot").style.background=color; };
 
-<!-- 接続ロジック（差し替え） -->
-<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
-<script>
-  const $ = (id)=>document.getElementById(id);
-  const setStatus = (m,c="")=>{ const el=$("status"); el.textContent="状態："+m; el.className="status "+c; };
-  const setBadge = (t,color)=>{ $("badge").textContent=t; $("dot").style.background=color; };
+    // リモート映像を受信したら表示
+    function wireRemoteTracks(room){
+      room.on("trackSubscribed",(track)=>{
+        if(track.kind==="video"){
+          const el = track.attach();
+          Object.assign(el.style,{width:"100%",height:"100%",objectFit:"cover"});
+          $("videoBox").appendChild(el);
+        }
+      });
+    }
 
-  async function publishLocalTracks(room){
-    const { LocalVideoTrack, LocalAudioTrack } = LivekitClient;
-    const cam = await LocalVideoTrack.create();   // ← ここで権限ダイアログが出ます
-    const mic = await LocalAudioTrack.create();
-    await room.localParticipant.publishTrack(cam);
-    await room.localParticipant.publishTrack(mic);
-    const el = cam.attach();
-    Object.assign(el.style,{width:"100%",height:"100%",objectFit:"cover"});
-    $("center").style.opacity=.2; $("videoBox").appendChild(el);
-  }
-  function wireRemoteTracks(room){
-    room.on("trackSubscribed",(track)=>{
-      if(track.kind==="video"){
-        const el=track.attach();
+    // ローカルトラック（カメラ/マイク）をまとめて作成＆公開
+    async function publishLocalTracks(room){
+      const { createLocalTracks } = LivekitClient;
+      const tracks = await createLocalTracks({ audio:true, video:true }); // ← 許可ダイアログ
+      for(const t of tracks){ await room.localParticipant.publishTrack(t); }
+      const video = tracks.find(t => t.kind === 'video');
+      if(video){
+        const el = video.attach();
         Object.assign(el.style,{width:"100%",height:"100%",objectFit:"cover"});
+        $("center").style.opacity = 0.2;
         $("videoBox").appendChild(el);
       }
-    });
-  }
-
-  let roomRef=null;
-
-  $("btnConnect").onclick = async ()=>{
-    const name = $("name").value || "Guest";
-    try{
-      // ① getToken
-      setStatus("トークン取得中…"); setBadge("接続準備","#ffd166");
-      const res = await fetch(`/api/getToken?name=${encodeURIComponent(name)}&room=demo-room`);
-      const raw = await res.text();
-      if(!res.ok) throw new Error(`getToken HTTP ${res.status}: ${raw}`);
-      let data; try{ data = JSON.parse(raw); }catch{ throw new Error(`getToken JSON解析失敗: ${raw}`); }
-      if(!data?.token || !data?.url) throw new Error(`getToken 応答が不正: ${raw}`);
-// ① 接続情報（本来は /api/getToken から取得する）
-const url = "wss://guangdaoxianguanguanganneiaiejientoearishizuo1haoji-yo7qg6ht.livekit.cloud";
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....U4EjIDZDxccMOFL-a5SN6CAK25r9XCDGSNXodWJ64eE";
-
-      // ② LiveKit接続
-const room = new LivekitClient.Room();
-await room.connect(url, token);
-roomRef = room;
-wireRemoteTracks(room);
-
-
-      // ③ カメラ/マイク
-      setStatus("カメラ/マイク取得中…（許可してください）");
-      await publishLocalTracks(room);
-
-      setStatus("オンライン（接続中）","ok"); setBadge("オンライン","#25d366");
-    }catch(e){
-      console.error(e);
-      setStatus(String(e.message||e),"err");
-      alert(String(e.message||e));   // ← 具体的な原因が出ます
     }
-  };
 
-  $("btnMic").onclick = async ()=>{ setStatus("マイク権限を確認"); await new Promise(r=>setTimeout(r,300)); setStatus("マイク OK","ok"); };
-  $("btnReset").onclick = ()=>{ try{roomRef?.disconnect();}catch{} location.reload(); };
-</script>
+    let roomRef = null;
 
+    $("btnConnect").onclick = async ()=>{
+      const name = $("name").value || "Guest";
+      try{
+        // ① トークン取得
+        setStatus("トークン取得中…"); setBadge("接続準備","#ffd166");
+        const res = await fetch(`/api/getToken?name=${encodeURIComponent(name)}&room=demo-room`);
+        const raw = await res.text();
+        if(!res.ok) throw new Error(`getToken HTTP ${res.status}: ${raw}`);
+        let data; try{ data = JSON.parse(raw); }catch{ throw new Error(`getToken JSON解析失敗: ${raw}`); }
+        if(!data?.token || !data?.url) throw new Error(`getToken 応答が不正: ${raw}`);
 
+        // ② LiveKit に接続（UMDは Room()→connect）
+        const room = new LivekitClient.Room();
+        await room.connect(data.url, data.token);
+        roomRef = room;
+        wireRemoteTracks(room);
+
+        // ③ 自分のカメラ/マイクを公開
+        setStatus("カメラ/マイク取得中…（許可してください）");
+        await publishLocalTracks(room);
+
+        setStatus("オンライン（接続中）","ok");
+        setBadge("オンライン","#25d366");
+      }catch(e){
+        console.error(e);
+        setStatus(String(e.message||e),"err");
+        alert(String(e.message||e));
+      }
+    };
+
+    $("btnMic").onclick = async ()=>{ setStatus("マイク権限を確認"); await new Promise(r=>setTimeout(r,300)); setStatus("マイク OK","ok"); };
+    $("btnReset").onclick = ()=>{ try{roomRef?.disconnect();}catch{} location.reload(); };
+    $("btnEnd").onclick   = ()=>{ try{roomRef?.disconnect();}catch{} setStatus("切断しました"); setBadge("切断","#ff6b6b"); };
+  </script>
 </body>
 </html>
