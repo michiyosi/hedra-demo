@@ -41,6 +41,7 @@
     let room = null;
     let localCamTrack = null;
     let localMicTrack = null;
+    const remoteAudioEls = [];
 
     async function getTokenAndUrl() {
       const name = $("name").value || "Guest";
@@ -92,6 +93,7 @@
           if (track.kind === "audio") {
             const el = track.attach(); // audio要素
             document.body.appendChild(el); // 画面に出さなくてもOK（appendだけで再生）
+            remoteAudioEls.push(el);
             try { el.play(); } catch {}
           }
         });
@@ -128,6 +130,9 @@
         rv.id = 'remoteVideo'; rv.autoplay = true; rv.playsInline = true;
         $("localVideo")?.replaceWith(lv);
         $("remoteVideo")?.replaceWith(rv);
+        // remove remote audio elements
+        remoteAudioEls.forEach(el=>el.remove());
+        remoteAudioEls.length = 0;
       }
     }
 
